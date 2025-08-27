@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETH-USDT 流动性池</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <h1>🌊 ETH-USDT AMM 流动性池</h1>
+            <div class="wallet-info">
+                <button id="connectWallet" class="btn btn-primary">连接钱包</button>
+                <div id="walletAddress" class="hidden">
+                    <span class="address"></span>
+                    <button id="disconnectWallet" class="btn btn-small">断开</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 余额显示 -->
+        <div class="balance-section">
+            <div class="balance-card">
+                <h3>账户余额</h3>
+                <div class="balances">
+                    <div class="balance-item">
+                        <span class="token">ETH:</span>
+                        <span id="ethBalance">0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="token">USDT:</span>
+                        <span id="usdtBalance">0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="token">LP Token:</span>
+                        <span id="lpBalance">0.00</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="token">LP 价值:</span>
+                        <span id="lpValue">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="pool-card">
+                <h3>流动性池状态 <span id="updateIndicator" class="update-indicator">🔄</span></h3>
+                <div class="pool-info">
+                    <div class="pool-item">
+                        <span class="label">ETH 储备:</span>
+                        <span id="ethReserve">0.00</span>
+                    </div>
+                    <div class="pool-item">
+                        <span class="label">USDT 储备:</span>
+                        <span id="usdtReserve">0.00</span>
+                    </div>
+                    <div class="pool-item">
+                        <span class="label">ETH 价格:</span>
+                        <span id="ethPrice">$0.00</span>
+                    </div>
+                    <div class="pool-item">
+                        <span class="label">池子总价值:</span>
+                        <span id="poolTotalValue">$0.00</span>
+                    </div>
+                    <div class="pool-item">
+                        <span class="label">当前比例:</span>
+                        <span id="price">1 ETH = 0 USDT</span>
+                    </div>
+                    <div class="pool-item">
+                        <span class="label">总 LP 代币:</span>
+                        <span id="totalLp">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主操作区域 -->
+        <div class="main-content">
+            <!-- 标签页 -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="swap">🔄 交换</button>
+                <button class="tab-button" data-tab="liquidity">💧 流动性</button>
+                <button class="tab-button" data-tab="faucet">🎁 水龙头</button>
+            </div>
+
+            <!-- 交换面板 -->
+            <div id="swapPanel" class="tab-panel active">
+                <h2>交换代币</h2>
+                <div class="swap-container">
+                    <div class="input-group">
+                        <label>从</label>
+                        <div class="token-input">
+                            <input type="number" id="swapFromAmount" placeholder="0.0" step="0.01">
+                            <select id="swapFromToken">
+                                <option value="ETH">ETH</option>
+                                <option value="USDT">USDT</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="swapDirection" class="swap-direction">⇅</button>
+                    
+                    <div class="input-group">
+                        <label>到</label>
+                        <div class="token-input">
+                            <input type="number" id="swapToAmount" placeholder="0.0" step="0.01">
+                            <select id="swapToToken">
+                                <option value="USDT">USDT</option>
+                                <option value="ETH">ETH</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="swap-info">
+                        <div class="info-row">
+                            <span>价格影响:</span>
+                            <span id="priceImpact">0.00%</span>
+                        </div>
+                        <div class="info-row">
+                            <span>手续费 (0.3%):</span>
+                            <span id="swapFee">0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span>滑点容忍:</span>
+                            <input type="number" id="slippage" value="1" min="0.1" max="50" step="0.1">%
+                        </div>
+                    </div>
+                    
+                    <button id="swapButton" class="btn btn-primary btn-large">交换</button>
+                </div>
+            </div>
+
+            <!-- 流动性面板 -->
+            <div id="liquidityPanel" class="tab-panel">
+                <div class="liquidity-tabs">
+                    <button class="sub-tab active" data-action="add">添加流动性</button>
+                    <button class="sub-tab" data-action="remove">移除流动性</button>
+                </div>
+                
+                <!-- 添加流动性 -->
+                <div id="addLiquiditySection" class="liquidity-section active">
+                    <h3>添加流动性</h3>
+                    <div class="input-group">
+                        <label>ETH 数量</label>
+                        <input type="number" id="addEthAmount" placeholder="0.0" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>USDT 数量</label>
+                        <input type="number" id="addUsdtAmount" placeholder="0.0" step="0.01">
+                    </div>
+                    <div class="liquidity-info">
+                        <div class="info-row">
+                            <span>当前比例:</span>
+                            <span id="currentRatio">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span>预计获得 LP:</span>
+                            <span id="expectedLp">0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span>份额占比:</span>
+                            <span id="sharePercent">0.00%</span>
+                        </div>
+                    </div>
+                    <button id="addLiquidityButton" class="btn btn-primary btn-large">添加流动性</button>
+                </div>
+                
+                <!-- 移除流动性 -->
+                <div id="removeLiquiditySection" class="liquidity-section">
+                    <h3>移除流动性</h3>
+                    <div class="input-group">
+                        <label>LP Token 数量</label>
+                        <input type="number" id="removeLpAmount" placeholder="0.0" step="0.000001">
+                        <button id="maxLpButton" class="btn btn-small">MAX</button>
+                    </div>
+                    <div class="remove-slider">
+                        <input type="range" id="removePercent" min="0" max="100" value="0">
+                        <div class="slider-labels">
+                            <span>0%</span>
+                            <span>25%</span>
+                            <span>50%</span>
+                            <span>75%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div class="liquidity-info">
+                        <div class="info-row">
+                            <span>预计获得 ETH:</span>
+                            <span id="expectedEth">0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span>预计获得 USDT:</span>
+                            <span id="expectedUsdt">0.00</span>
+                        </div>
+                    </div>
+                    <button id="removeLiquidityButton" class="btn btn-primary btn-large">移除流动性</button>
+                </div>
+            </div>
+
+            <!-- 水龙头面板 -->
+            <div id="faucetPanel" class="tab-panel">
+                <h2>测试代币水龙头</h2>
+                <div class="faucet-container">
+                    <p>获取测试代币用于体验流动性池功能</p>
+                    <div class="faucet-buttons">
+                        <button id="getUsdtButton" class="btn btn-primary">
+                            获取 10,000 USDT
+                        </button>
+                        <button id="getEthButton" class="btn btn-primary">
+                            获取 1 ETH (从水龙头)
+                        </button>
+                    </div>
+                    <div id="faucetMessage" class="message"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交易历史 -->
+        <div class="history-section">
+            <h3>最近交易</h3>
+            <div id="transactionHistory" class="history-list">
+                <p class="no-history">暂无交易记录</p>
+            </div>
+        </div>
+
+        <!-- 提示信息 -->
+        <div id="toast" class="toast"></div>
+        
+        <!-- 加载遮罩 -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p>处理中...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="abi.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

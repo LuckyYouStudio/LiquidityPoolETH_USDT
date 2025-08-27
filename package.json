@@ -1,0 +1,36 @@
+{
+  "name": "liquiditypooleth_usdt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "node": "npx hardhat node",
+    "console": "npx hardhat console",
+    "test:menu": "npx hardhat run scripts/test-menu.js --network localhost",
+    "interact": "npx hardhat run scripts/interact.js --network localhost",
+    "console:local": "npx hardhat console --network localhost",
+    "frontend": "http-server frontend -p 3000 -c-1",
+    "dev": "http-server frontend -p 3000 -c-1 -o"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuckyYouStudio/LiquidityPoolETH_USDT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuckyYouStudio/LiquidityPoolETH_USDT/issues"
+  },
+  "homepage": "https://github.com/LuckyYouStudio/LiquidityPoolETH_USDT#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/contracts": "^4.9.6",
+    "hardhat": "^2.26.3",
+    "http-server": "^14.1.1"
+  }
+}
